@@ -225,6 +225,11 @@ export class Island {
 
   private wireFsm() {
     this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
+    // The compact island had its own fixed 60 s quiet period, which an active
+    // agent session (a tool call every few seconds) resets forever — the pill
+    // then reads as "never goes away". Tie it to the same user setting so one
+    // number governs the whole island.
+    this.fsm.petitToHiddenDelay = State.settings.autoCloseInterval;
     this.fsm.onTransition = (from, to) => {
       switch (to) {
         case "hidden":
