@@ -239,7 +239,14 @@ export class Island {
           break;
         case "home":
           this.expand(State.defaultView());
-          if (!this.wasInIsland) this.fsm.mouseLeft();
+          // Arm the auto-collapse unconditionally. On Wayland the cursor
+          // position comes from the window's own events (followPageCursor),
+          // so an island opened while the pointer is elsewhere — a hook
+          // alert, the tray menu — never sees a mouse-enter/leave pair and
+          // the panel stayed open until the pointer happened to cross it.
+          // A hover that arrives later clears the timer as before.
+          this.fsm.mouseLeft();
+          this.homeCollapseAt = performance.now() + State.settings.autoCloseInterval * 1000;
           break;
         case "coucou":
           this.expand("greeting");
